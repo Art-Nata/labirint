@@ -5,21 +5,19 @@ import pygame
 
 WIND0W_SIZE = WINDOW_WIDTH, WINDOW_HEIGTH = 600, 600
 
-FPS = 20
+FPS = 40
 MAPS_DIR = 'Maps'
 TILE_SIZE = 40
 ENEMY_EVENT_TYPE = 40
 
-parser = argparse.ArgumentParser()
-parser.add_argument("txt", type=str, nargs="?", default="map1.txt")
-args = parser.parse_args()
-map_file = args.txt
+map_file = None
+clock = pygame.time.Clock()
 
 
 class Labirint:
     def __init__(self, filename, free_tiles, finish_tile):
         self.map = []
-        with open(f'{MAPS_DIR}/{filename}') as open_file:
+        with open(f'{MAPS_DIR}/{filename}.txt') as open_file:
             for line in open_file:
                 self.map.append(list(map(int, line.split())))
         self.height = len(self.map)
@@ -71,7 +69,7 @@ class Hero:
 
     def __init__(self, file_img, position):
         self.x, self.y = position
-        self.image = load_image('hero.png', -1)
+        self.image = load_image(file_img, -1)
         self.image = pygame.transform.scale(self.image, (TILE_SIZE - 1, TILE_SIZE - 1))
 
     def get_position(self):
@@ -89,9 +87,9 @@ class Enemy:
 
     def __init__(self, file_img, position):
         self.x, self.y = position
-        self.delay = 150
+        self.delay = 300
         pygame.time.set_timer(ENEMY_EVENT_TYPE, self.delay)
-        self.image = load_image('enemy.png', -1)
+        self.image = load_image(file_img, -1)
         self.image = pygame.transform.scale(self.image, (TILE_SIZE - 1, TILE_SIZE - 1))
 
     def get_position(self):
@@ -185,6 +183,7 @@ def start_screen():
     clock1 = pygame.time.Clock()
     fon = pygame.transform.scale(load_image('fon.png'), WIND0W_SIZE)
     screen.blit(fon, (0, 0))
+    pygame.font.init()
     font = pygame.font.Font(None, 40)
     text_coord = 80
     for line in intro_text:
@@ -205,37 +204,41 @@ def start_screen():
         pygame.display.flip()
         clock1.tick(FPS)
 
+
 def main():
+    start_screen()
     pygame.init()
     screen = pygame.display.set_mode(WIND0W_SIZE)
-    clock = pygame.time.Clock()
 
-    start_screen()
-    labirint = Labirint(map_file, [0, 2], 2)
-    hero = Hero('hero.png', (1, 1))
-    enemy = Enemy('enemy.png', (7, 7))
-    game = Game(labirint, hero, enemy)
+    for lvl in range(1, 2):
+        print(lvl)
+        map_file = "map%s" % lvl
+        labirint = Labirint(map_file, [0, 2], 2)
+        hero = Hero('hero.png', (1, 1))
+        enemy = Enemy('enemy.png', (7, 7))
+        game = Game(labirint, hero, enemy)
 
-    running = True
-    game_over = False
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == ENEMY_EVENT_TYPE and not game_over:
-                game.move_enemy()
-        if not game_over:
-            game.update_hero()
-        screen.fill((0, 0, 0))
-        game.render(screen)
-        if game.check_rout():
-            game_over = True
-            message_show(screen, 'Увы! Al победил')
-        if game.check_next_level():
-            game_over = True
-            message_show(screen, 'Вы спасены!')
-        pygame.display.flip()
-        clock.tick(FPS)
+        running = True
+        game_over = False
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    terminate()
+                if event.type == ENEMY_EVENT_TYPE and not game_over:
+                    game.move_enemy()
+            if not game_over:
+                game.update_hero()
+            screen.fill((0, 0, 0))
+            game.render(screen)
+            if game.check_rout():
+                game_over = True
+                message_show(screen, 'Увы! Al победил')
+            if game.check_next_level():
+                message_show(screen, 'Вы спасены!')
+                game_over = True
+            pygame.display.flip()
+            clock.tick(FPS)
+
     terminate()
 
 
