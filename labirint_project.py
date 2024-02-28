@@ -138,6 +138,11 @@ class Game:
     def check_rout(self):
         return self.hero.get_position() == self.enemy.get_position()
 
+    def switch_level(self, levelno):
+        self.hero = LEVELS[levelno]['hero']
+        self.enemy = LEVELS[levelno]['enemy']
+        self.labirint = LEVELS[levelno]['labirint']
+
 
 def message_show(screen, message):
     font = pygame.font.Font(None, 50)
@@ -150,7 +155,6 @@ def message_show(screen, message):
     pygame.draw.rect(screen, (10, 100, 10), (text_x - 10, text_y - 10,
                                            text_w + 20, text_h + 20))
     screen.blit(text, (text_x, text_y))
-    #time.wait(3000)
 
 
 def load_image(name, color_key=None):
@@ -207,19 +211,30 @@ def start_screen():
         clock1.tick(FPS)
 
 
-
-start_screen()
 pygame.init()
 screen = pygame.display.set_mode(WIND0W_SIZE)
+LEVELS = [
+    {
+     "enemy": Enemy('enemy.png', (7, 7)),
+     "hero": Hero('hero.png', (1, 1)),
+     "labirint": Labirint('map1', [0, 2], 2)
+     },
+    {"hero": Hero('hero.png', (7, 14)),
+     "enemy": Enemy('enemy.png', (1, 1)),
+     "labirint": Labirint('map2', [0, 2], 2)
+     }
+]
 
-map_file = "map1"
-labirint = Labirint(map_file, [0, 2], 2)
-hero = Hero('hero.png', (1, 1))
-enemy = Enemy('enemy.png', (7, 7))
+start_screen()
+
+labirint = LEVELS[0]['labirint']
+hero = LEVELS[0]['hero']
+enemy = LEVELS[0]['enemy']
 game = Game(labirint, hero, enemy)
 
 running = True
 level_end = False
+lvl = 1
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -234,37 +249,9 @@ while running:
         level_end = True
     if not level_end:
         game.update_hero()
-        screen.fill((0, 0, 0))
-        game.render(screen)
-        pygame.display.flip()
-        clock.tick(FPS)
     else:
-        pygame.quit()
-
-map_file = "map2"
-labirint = Labirint(map_file, [0, 2], 2)
-hero = Hero('hero.png', (14, 7))
-enemy = Enemy('enemy.png', (1, 1))
-game = Game(labirint, hero, enemy)
-
-running = True
-level_end = False
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            terminate()
-        if event.type == ENEMY_EVENT_TYPE and not level_end:
-            game.move_enemy()
-    if game.check_rout():
-        level_end = True
-        message_show(screen, 'Увы! Al победил')
-    if game.check_next_level():
-        message_show(screen, 'Вы спасены!')
-        level_end = True
-    if not level_end:
-        game.update_hero()
-        screen.fill((0, 0, 0))
-        game.render(screen)
-
+        game.switch_level(lvl)
+    screen.fill((0, 0, 0))
+    game.render(screen)
     pygame.display.flip()
     clock.tick(FPS)
