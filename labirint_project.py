@@ -2,6 +2,7 @@ import argparse
 import sys
 
 import pygame
+from pygame import time
 
 WIND0W_SIZE = WINDOW_WIDTH, WINDOW_HEIGTH = 600, 600
 
@@ -149,6 +150,7 @@ def message_show(screen, message):
     pygame.draw.rect(screen, (10, 100, 10), (text_x - 10, text_y - 10,
                                            text_w + 20, text_h + 20))
     screen.blit(text, (text_x, text_y))
+    #time.wait(3000)
 
 
 def load_image(name, color_key=None):
@@ -207,10 +209,11 @@ def start_screen():
 
 def main():
     start_screen()
-    pygame.init()
-    screen = pygame.display.set_mode(WIND0W_SIZE)
 
-    for lvl in range(1, 2):
+
+    for lvl in range(1, 3):
+        pygame.init()
+        screen = pygame.display.set_mode(WIND0W_SIZE)
         print(lvl)
         map_file = "map%s" % lvl
         labirint = Labirint(map_file, [0, 2], 2)
@@ -219,27 +222,30 @@ def main():
         game = Game(labirint, hero, enemy)
 
         running = True
-        game_over = False
+        level_end = False
+        game_end = False
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     terminate()
-                if event.type == ENEMY_EVENT_TYPE and not game_over:
+                if event.type == ENEMY_EVENT_TYPE and not level_end and not game_end:
                     game.move_enemy()
-            if not game_over:
-                game.update_hero()
-            screen.fill((0, 0, 0))
-            game.render(screen)
             if game.check_rout():
-                game_over = True
+                game_end = True
                 message_show(screen, 'Увы! Al победил')
             if game.check_next_level():
                 message_show(screen, 'Вы спасены!')
-                game_over = True
+                level_end = True
+            if not level_end:
+                game.update_hero()
+                screen.fill((0, 0, 0))
+                game.render(screen)
+            else:
+                continue
             pygame.display.flip()
             clock.tick(FPS)
 
-    terminate()
+    #terminate()
 
 
 if __name__ == '__main__':
