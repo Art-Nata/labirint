@@ -5,6 +5,7 @@ import pygame
 from pygame import time
 
 from date.libs import load_image, terminate, message_show, saved_name
+from date.window_end import end_screen
 from date.window_start import start_screen
 
 WIND0W_SIZE = WINDOW_WIDTH, WINDOW_HEIGTH = 600, 600
@@ -141,14 +142,10 @@ class Game:
     def check_rout(self):
         return self.hero.get_position() == self.enemy.get_position()
 
-    def switch_level(self, levelno):
-        self.hero = LEVELS[levelno]['hero']
-        self.enemy = LEVELS[levelno]['enemy']
-        self.labirint = LEVELS[levelno]['labirint']
-
 
 pygame.init()
 screen = pygame.display.set_mode(WIND0W_SIZE)
+#Создаём список уровней
 LEVELS = [
     {
      "enemy": Enemy('enemy.png', (7, 7)),
@@ -166,33 +163,33 @@ LEVELS = [
      }
 ]
 
-#name_gamer = start_screen(WIND0W_SIZE)
-#saved_name(name_gamer)
+name_player = start_screen(WIND0W_SIZE)
 
-labirint = LEVELS[0]['labirint']
-hero = LEVELS[0]['hero']
-enemy = LEVELS[0]['enemy']
-game = Game(labirint, hero, enemy)
 
-running = True
-lvl = 1
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            terminate()
-        elif event.type == ENEMY_EVENT_TYPE:
-            game.move_enemy()
-        elif event.type == pygame.KEYDOWN:
-            game.update_hero()
+end_game_viv = True
+for lvl in range(len(LEVELS)):
+    labirint = LEVELS[lvl]['labirint']
+    hero = LEVELS[lvl]['hero']
+    enemy = LEVELS[lvl]['enemy']
+    game = Game(labirint, hero, enemy)
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == ENEMY_EVENT_TYPE:
+                game.move_enemy()
+            elif event.type == pygame.KEYDOWN:
+                game.update_hero()
         if game.check_rout():
-            message_show(screen, 'Увы! Al победил')
-            terminate()
-        if game.check_next_level():
-            message_show(screen, 'Вы спасены! Идём дальше')
-            lvl += 1
-            game.switch_level(lvl)
+            end_game_viv = False
+            running = False
+        elif game.check_next_level():
+            running = False
 
-    screen.fill((0, 0, 0))
-    game.render(screen)
-    pygame.display.flip()
-    clock.tick(FPS)
+        screen.fill((0, 0, 0))
+        game.render(screen)
+        pygame.display.flip()
+        clock.tick(FPS)
+
+end_screen(end_game_viv, name_player, WIND0W_SIZE)

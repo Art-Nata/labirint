@@ -35,4 +35,12 @@ def terminate():
 
 def saved_name(name):
     with open('rez.txt', 'a', encoding='utf-8') as f:
-        f.write(name)
+        f.write(name + '\n')
+
+
+def load_list(file):
+    list_heroes = open(file, 'r', encoding='utf_8').readlines()
+    if len(list_heroes) > 3:
+        return list_heroes[:3]
+    else:
+        return list_heroes[:len(list_heroes)]
