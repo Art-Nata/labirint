@@ -1,12 +1,15 @@
-import argparse
+
 import sys
 
 import pygame
 from pygame import time
 
+from date.libs import load_image, terminate, message_show, saved_name
+from date.window_start import start_screen
+
 WIND0W_SIZE = WINDOW_WIDTH, WINDOW_HEIGTH = 600, 600
 
-FPS = 40
+FPS = 50
 MAPS_DIR = 'Maps'
 TILE_SIZE = 40
 ENEMY_EVENT_TYPE = 40
@@ -88,7 +91,7 @@ class Enemy:
 
     def __init__(self, file_img, position):
         self.x, self.y = position
-        self.delay = 300
+        self.delay = 400
         pygame.time.set_timer(ENEMY_EVENT_TYPE, self.delay)
         self.image = load_image(file_img, -1)
         self.image = pygame.transform.scale(self.image, (TILE_SIZE - 1, TILE_SIZE - 1))
@@ -144,73 +147,6 @@ class Game:
         self.labirint = LEVELS[levelno]['labirint']
 
 
-def message_show(screen, message):
-    font = pygame.font.Font(None, 50)
-    text = font.render(message, 1, (100, 255, 100))
-    text_x = WINDOW_WIDTH // 2 - text.get_width() // 2
-    text_y = WINDOW_HEIGTH // 2 - text.get_height() // 2
-    text_w = text.get_width()
-    text_h = text.get_height()
-
-    pygame.draw.rect(screen, (10, 100, 10), (text_x - 10, text_y - 10,
-                                           text_w + 20, text_h + 20))
-    screen.blit(text, (text_x, text_y))
-
-
-def load_image(name, color_key=None):
-    try:
-        image = pygame.image.load(f'images/{name}').convert()
-    except pygame.error as message:
-        print('Cannot load image:', name)
-        raise SystemExit(message)
-
-    if color_key is not None:
-        if color_key == -1:
-            color_key = image.get_at((0, 0))
-        image.set_colorkey(color_key)
-    else:
-        image = image.convert_alpha()
-    return image
-
-
-def terminate():
-    pygame.quit()
-    sys.exit()
-
-
-def start_screen():
-    intro_text = ["Приветствую тебя, герой!", "",
-                  "Помоги малышу-огню!",
-                  "Выведи его из лабиринта и спаси от",
-                  "супер-пупер Al",
-                  "", "Удачи!"]
-
-    screen = pygame.display.set_mode(WIND0W_SIZE)
-    clock1 = pygame.time.Clock()
-    fon = pygame.transform.scale(load_image('fon.png'), WIND0W_SIZE)
-    screen.blit(fon, (0, 0))
-    pygame.font.init()
-    font = pygame.font.Font(None, 40)
-    text_coord = 80
-    for line in intro_text:
-        string_rendered = font.render(line, 1, (70, 50, 110))
-        intro_rect = string_rendered.get_rect()
-        text_coord += 10
-        intro_rect.top = text_coord
-        intro_rect.x = 40
-        text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                terminate()
-            elif event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
-                return
-        pygame.display.flip()
-        clock1.tick(FPS)
-
-
 pygame.init()
 screen = pygame.display.set_mode(WIND0W_SIZE)
 LEVELS = [
@@ -222,10 +158,16 @@ LEVELS = [
     {"hero": Hero('hero.png', (7, 14)),
      "enemy": Enemy('enemy.png', (1, 1)),
      "labirint": Labirint('map2', [0, 2], 2)
+     },
+     {
+     "enemy": Enemy('enemy.png', (11, 7)),
+     "hero": Hero('hero.png', (4, 11)),
+     "labirint": Labirint('map3', [0, 2], 2)
      }
 ]
 
-start_screen()
+#name_gamer = start_screen(WIND0W_SIZE)
+#saved_name(name_gamer)
 
 labirint = LEVELS[0]['labirint']
 hero = LEVELS[0]['hero']
@@ -233,24 +175,23 @@ enemy = LEVELS[0]['enemy']
 game = Game(labirint, hero, enemy)
 
 running = True
-level_end = False
 lvl = 1
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             terminate()
-        if event.type == ENEMY_EVENT_TYPE and not level_end:
+        elif event.type == ENEMY_EVENT_TYPE:
             game.move_enemy()
-    if game.check_rout():
-        level_end = True
-        message_show(screen, 'Увы! Al победил')
-    if game.check_next_level():
-        message_show(screen, 'Вы спасены!')
-        level_end = True
-    if not level_end:
-        game.update_hero()
-    else:
-        game.switch_level(lvl)
+        elif event.type == pygame.KEYDOWN:
+            game.update_hero()
+        if game.check_rout():
+            message_show(screen, 'Увы! Al победил')
+            terminate()
+        if game.check_next_level():
+            message_show(screen, 'Вы спасены! Идём дальше')
+            lvl += 1
+            game.switch_level(lvl)
+
     screen.fill((0, 0, 0))
     game.render(screen)
     pygame.display.flip()
