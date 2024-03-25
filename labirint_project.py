@@ -195,6 +195,7 @@ for lvl in range(len(LEVELS)):
         game.render(screen)
         pygame.display.flip()
         clock.tick(FPS)
+    time.wait(2000)
 
 # запускаем финальное окно, передаём имя игрока, флаг победы в игре и размеры окна
 end_screen(end_game_viv, name_player, WIND0W_SIZE)
