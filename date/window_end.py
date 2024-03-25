@@ -1,10 +1,11 @@
 import pygame
+from pygame import time
 
 from date.libs import saved_name, load_image, load_list, terminate
 
 
 def end_screen(end_game, name, window_size):
-    print("kkkk")
+
     list_heroes = load_list('rez.txt')
 
     if end_game:
@@ -40,7 +41,8 @@ def end_screen(end_game, name, window_size):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-
+            else:
+                running = False
         fon = pygame.transform.scale(load_image('fon.png'), window_size)
         screen.blit(fon, (0, 0))
         pygame.font.init()
@@ -51,3 +53,5 @@ def end_screen(end_game, name, window_size):
             screen.blit(text, intro_rect)
 
         pygame.display.flip()
+    time.wait(7000)
+    pygame.quit()

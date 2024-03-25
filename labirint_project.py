@@ -10,7 +10,7 @@ from date.window_start import start_screen
 
 WIND0W_SIZE = WINDOW_WIDTH, WINDOW_HEIGTH = 600, 600
 
-FPS = 50
+FPS = 60
 MAPS_DIR = 'Maps'
 TILE_SIZE = 40
 ENEMY_EVENT_TYPE = 40
@@ -71,7 +71,8 @@ class Labirint:
 
 
 class Hero:
-
+    # класс игрока
+    # инициализация с картинкой и позицией на поле
     def __init__(self, file_img, position):
         self.x, self.y = position
         self.image = load_image(file_img, -1)
@@ -145,7 +146,7 @@ class Game:
 
 pygame.init()
 screen = pygame.display.set_mode(WIND0W_SIZE)
-#Создаём список уровней
+#Создаём список уровней, можно расширять по желанию
 LEVELS = [
     {
      "enemy": Enemy('enemy.png', (7, 7)),
@@ -162,16 +163,19 @@ LEVELS = [
      "labirint": Labirint('map3', [0, 2], 2)
      }
 ]
-
+# запускаем начальное окно, где получаем имя(ник) игрока и возвращаем его в переменную
 name_player = start_screen(WIND0W_SIZE)
 
-
+# флаг победы в игре
 end_game_viv = True
+
 for lvl in range(len(LEVELS)):
     labirint = LEVELS[lvl]['labirint']
     hero = LEVELS[lvl]['hero']
     enemy = LEVELS[lvl]['enemy']
     game = Game(labirint, hero, enemy)
+    if not end_game_viv:
+        break
     running = True
     while running:
         for event in pygame.event.get():
@@ -192,4 +196,5 @@ for lvl in range(len(LEVELS)):
         pygame.display.flip()
         clock.tick(FPS)
 
+# запускаем финальное окно, передаём имя игрока, флаг победы в игре и размеры окна
 end_screen(end_game_viv, name_player, WIND0W_SIZE)
