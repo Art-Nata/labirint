@@ -1,7 +1,7 @@
+import os
 import sys
 
 import pygame
-from pygame import time
 
 
 def message_show(screen, message):
@@ -14,7 +14,9 @@ def message_show(screen, message):
 
 def load_image(name, color_key=None):
     try:
-        image = pygame.image.load(f'images/{name}').convert()
+        img_dir = os.path.join((os.path.dirname(__file__)), 'images')
+        print(img_dir)
+        image = pygame.image.load(os.path.join(img_dir, name)).convert()
     except pygame.error as message:
         print('Cannot load image:', name)
         raise SystemExit(message)
@@ -35,7 +37,7 @@ def terminate():
 
 def saved_name(name):
     with open('rez.txt', 'a', encoding='utf-8') as f:
-        f.write(name + '\n')
+        f.writelines(name)
 
 
 def load_list(file):
