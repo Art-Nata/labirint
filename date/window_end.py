@@ -11,7 +11,7 @@ def end_screen(end_game, name):
     if end_game:
         list_end_game = [f"{name}, ты справился!",
                          "Огонь вырвался из лабиринта",
-                         "и принесёт свет и тепло людям."
+                         "и принесёт свет и тепло людям.",
                          "Твоё имя внесено в Книгу ГЕРОЕВ",
                          "",
                          f"1. {name}"]
@@ -39,7 +39,7 @@ def end_screen(end_game, name):
     intro_rect = text.get_rect(center=(300, 500))
     screen.blit(text, intro_rect)
 
-    game_return = False
+    game_over = True
     running = True
     while running:
         for event in pygame.event.get():
@@ -47,9 +47,10 @@ def end_screen(end_game, name):
                 terminate()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_y:
-                    game_return = True
-                elif event.key == pygame.K_n:
+                    game_over = False
                     running = False
+                elif event.key == pygame.K_n:
+                    terminate()
         fon = pygame.transform.scale(load_image('fon.png'), WIND0W_SIZE)
         screen.blit(fon, (0, 0))
         pygame.font.init()
@@ -65,6 +66,5 @@ def end_screen(end_game, name):
 
         pygame.display.flip()
     time.wait(3000)
-    pygame.quit()
 
-    return game_return
+    return game_over

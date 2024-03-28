@@ -14,8 +14,7 @@ def message_show(screen, message):
 
 def load_image(name, color_key=None):
     try:
-        img_dir = os.path.join((os.path.dirname(__file__)), 'images')
-        print(img_dir)
+        img_dir = os.path.abspath('images')
         image = pygame.image.load(os.path.join(img_dir, name)).convert()
     except pygame.error as message:
         print('Cannot load image:', name)
@@ -37,7 +36,7 @@ def terminate():
 
 def saved_name(name):
     with open('rez.txt', 'a', encoding='utf-8') as f:
-        f.writelines(name)
+        f.writelines(name+'\n')
 
 
 def load_list(file):

@@ -8,43 +8,45 @@ from date.window_start import start_screen
 
 from date import (WIND0W_SIZE, FPS, ENEMY_EVENT_TYPE)
 
-map_file = None
 
-#Создаём список уровней, можно расширять по желанию
-LEVELS = [
-    {
-     "enemy": Enemy('enemy.png', (7, 7)),
-     "hero": Hero('hero.png', (1, 1)),
-     "labirint": Labirint('map1', [0, 2], 2)
-     },
-    {"hero": Hero('hero.png', (7, 14)),
-     "enemy": Enemy('enemy.png', (1, 1)),
-     "labirint": Labirint('map2', [0, 2], 2)
-     },
-     {
-     "enemy": Enemy('enemy.png', (11, 7)),
-     "hero": Hero('hero.png', (4, 11)),
-     "labirint": Labirint('map3', [0, 2], 2)
-     }
-]
-clock = pygame.time.Clock()
+map_file = None
 
 pygame.init()
 screen = pygame.display.set_mode(WIND0W_SIZE)
+clock = pygame.time.Clock()
 delay = 400
+
 
 # запускаем начальное окно, где получаем имя(ник) игрока и возвращаем его в переменную
 name_player = start_screen(WIND0W_SIZE)
-not_game_over = True  #флаг окончания игры
+game_over = False  #флаг окончания игры
+pygame.time.set_timer(ENEMY_EVENT_TYPE, delay)
 
-while not_game_over:
+while not game_over:
+    # Создаём список уровней, можно расширять по желанию
+    LEVELS = [
+        {
+            "enemy": Enemy('enemy.png', (7, 7)),
+            "hero": Hero('hero.png', (1, 1)),
+            "labirint": Labirint('map1', [0, 2], 2)
+        },
+        {"hero": Hero('hero.png', (7, 14)),
+         "enemy": Enemy('enemy.png', (1, 1)),
+         "labirint": Labirint('map2', [0, 2], 2)
+         },
+        {
+            "enemy": Enemy('enemy.png', (11, 7)),
+            "hero": Hero('hero.png', (4, 11)),
+            "labirint": Labirint('map3', [0, 2], 2)
+        }
+    ]
 
     # флаг победы в игре
     end_game_viv = True
     for lvl in range(len(LEVELS)):
         labirint = LEVELS[lvl]['labirint']
         hero = LEVELS[lvl]['hero']
-        pygame.time.set_timer(ENEMY_EVENT_TYPE, delay)
+
         enemy = LEVELS[lvl]['enemy']
         game = Game(labirint, hero, enemy)
         if not end_game_viv:
@@ -71,4 +73,4 @@ while not_game_over:
         time.wait(2000)
 
     # запускаем финальное окно, передаём имя игрока, флаг победы в игре и размеры окна
-    not_game_over = end_screen(end_game_viv, name_player)
+    game_over = end_screen(end_game_viv, name_player)
