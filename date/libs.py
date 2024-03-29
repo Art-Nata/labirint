@@ -45,3 +45,19 @@ def load_list(file):
         return list_heroes[:3]
     else:
         return list_heroes[:len(list_heroes)]
+
+
+def load_sound(file_name):
+    try:
+        img_dir = os.path.abspath('sounds')
+        pygame.mixer.Sound(os.path.join(img_dir, file_name)).play().set_volume(0.2)
+    except pygame.error as message:
+        print('Cannot load image:', file_name)
+        raise SystemExit(message)
+
+
+def bump_animation():
+    while True:
+        for _, _, files in os.walk('images/bump'):
+            for name in files:
+                yield pygame.image.load(f"images/bump/{name}").convert_alpha()

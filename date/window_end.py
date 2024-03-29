@@ -1,11 +1,12 @@
 import pygame
 from pygame import time
 
-from date.libs import saved_name, load_image, load_list, terminate
+from date.libs import saved_name, load_image, load_list, terminate, load_sound
 from date import (WIND0W_SIZE)
 
 
 def end_screen(end_game, name):
+    load_sound('loshsh.mp3')
     list_heroes = load_list('rez.txt')
 
     if end_game:
@@ -32,11 +33,11 @@ def end_screen(end_game, name):
 
     for i in range(len(list_end_game)):
         text = font.render(list_end_game[i], 1, (0, 0, 0))
-        intro_rect = text.get_rect(center=(300, 100 + 50 * i))
+        intro_rect = text.get_rect(topleft=(100, 100 + 50 * i))
         screen.blit(text, intro_rect)
     font = pygame.font.Font(None, 24)
-    text = font.render("Поиграем ещё?        (Y / N)", 1, (0, 0, 0))
-    intro_rect = text.get_rect(center=(300, 500))
+    text = font.render("Поиграем ещё?        (Y / N)", 1, (255, 255, 0))
+    intro_rect = text.get_rect(center=(300, 580))
     screen.blit(text, intro_rect)
 
     game_over = True
@@ -57,14 +58,14 @@ def end_screen(end_game, name):
         font = pygame.font.Font(None, 40)
         for i in range(len(list_end_game)):
             text = font.render(list_end_game[i], 1, (0, 0, 0))
-            intro_rect = text.get_rect(center=(300, 100 + 50 * i))
+            intro_rect = text.get_rect(topleft=(300, 100 + 50 * i))
             screen.blit(text, intro_rect)
         font = pygame.font.Font(None, 24)
         text = font.render("Поиграем ещё?        (Y / N)", 1, (0, 0, 0))
-        intro_rect = text.get_rect(center=(300, 500))
+        intro_rect = text.get_rect(center=(300, 550))
         screen.blit(text, intro_rect)
 
         pygame.display.flip()
-    time.wait(3000)
+    time.wait(2000)
 
     return game_over

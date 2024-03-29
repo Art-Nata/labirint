@@ -1,3 +1,5 @@
+import random
+
 import pygame
 from pygame import time
 
@@ -27,27 +29,33 @@ while not game_over:
     LEVELS = [
         {
             "enemy": Enemy('enemy.png', (7, 7)),
-            "hero": Hero('hero.png', (1, 1)),
+            "hero": Hero('hero.png', (13, 13)),
             "labirint": Labirint('map1', [0, 2], 2)
         },
-        {"hero": Hero('hero.png', (7, 14)),
-         "enemy": Enemy('enemy.png', (1, 1)),
+        {"enemy": Enemy('enemy.png', (1, 1)),
+         "hero": Hero('hero.png', (7, 14)),
          "labirint": Labirint('map2', [0, 2], 2)
          },
         {
             "enemy": Enemy('enemy.png', (11, 7)),
             "hero": Hero('hero.png', (4, 11)),
             "labirint": Labirint('map3', [0, 2], 2)
+        },
+        {
+            "enemy": Enemy('enemy.png', (5, 3)),
+            "hero": Hero('hero.png', (11, 11)),
+            "labirint": Labirint('map3', [0, 2], 2)
         }
     ]
 
     # флаг победы в игре
     end_game_viv = True
-    for lvl in range(len(LEVELS)):
-        labirint = LEVELS[lvl]['labirint']
-        hero = LEVELS[lvl]['hero']
-
-        enemy = LEVELS[lvl]['enemy']
+    while len(LEVELS) > 0:
+        lvl = random.randrange(len(LEVELS))
+        level = LEVELS.pop(lvl)
+        labirint = level['labirint']
+        hero = level['hero']
+        enemy = level['enemy']
         game = Game(labirint, hero, enemy)
         if not end_game_viv:
             break

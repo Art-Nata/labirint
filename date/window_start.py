@@ -1,7 +1,7 @@
 import pygame
 from pygame import time
 
-from date.libs import load_image
+from date.libs import load_image, load_sound
 
 
 def start_screen(window_size):
@@ -15,7 +15,7 @@ def start_screen(window_size):
                   "супер-пупер Al",
                   "", "Удачи!",
                   ""]
-
+    load_sound('start.mp3')
     screen = pygame.display.set_mode(window_size)
     fon = pygame.transform.scale(load_image('fon.png'), window_size)
     screen.blit(fon, (0, 0))
